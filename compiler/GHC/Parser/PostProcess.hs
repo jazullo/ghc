@@ -3492,6 +3492,11 @@ mkMultTy pct t@(L _ (HsTyLit _ (HsNumTy (SourceText (unpackFS -> "1")) 1))) arr
     -- The location of "%" combined with the location of "1".
     pct1 :: EpToken "%1"
     pct1 = epTokenWidenR pct (locA (getLoc t))
+mkMultTy pct t@(L _ (HsTyLit _ (HsNumTy (SourceText (unpackFS -> "0")) 0))) arr
+  = HsPhantomArrow (EpPct1 pct1 arr)
+  where
+    pct1 :: EpToken "%0"
+    pct1 = epTokenWidenR pct (locA (getLoc t))
 mkMultTy pct t arr = HsExplicitMult (pct, arr) t
 
 mkMultExpr :: EpToken "%" -> LHsExpr GhcPs -> EpUniToken "->" "→" -> HsArrowOf (LHsExpr GhcPs) GhcPs
@@ -3501,6 +3506,11 @@ mkMultExpr pct t@(L _ (HsOverLit _ (OverLit _ (HsIntegral (IL (SourceText (unpac
   where
     -- The location of "%" combined with the location of "1".
     pct1 :: EpToken "%1"
+    pct1 = epTokenWidenR pct (locA (getLoc t))
+mkMultExpr pct t@(L _ (HsOverLit _ (OverLit _ (HsIntegral (IL (SourceText (unpackFS -> "0")) _ 0))))) arr
+  = HsPhantomArrow (EpPct1 pct1 arr)
+  where
+    pct1 :: EpToken "%0"
     pct1 = epTokenWidenR pct (locA (getLoc t))
 mkMultExpr pct t arr = HsExplicitMult (pct, arr) t
 
