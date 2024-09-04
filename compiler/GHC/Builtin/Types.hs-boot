@@ -61,6 +61,8 @@ oneDataConTy :: Type
 oneDataConTyCon :: TyCon
 manyDataConTy :: Type
 manyDataConTyCon :: TyCon
+zeroDataConTy :: Type
+zeroDataConTyCon :: TyCon
 unrestrictedFunTyCon :: TyCon
 multMulTyCon :: TyCon
 

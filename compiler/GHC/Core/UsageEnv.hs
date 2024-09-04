@@ -88,6 +88,7 @@ supUE (UsageEnv e1 b1) (UsageEnv e2 b2) = UsageEnv (plusNameEnv_CD2 combineUsage
          combineUsage (Just x) Nothing  | b2        = x
                                         | otherwise = ManyTy
          combineUsage Nothing  Nothing  = pprPanic "supUE" (ppr e1 <+> ppr e2)
+        --  combineUsage Nothing  Nothing  = ZeroTy
 -- Note: If you are changing this logic, check 'mkMultSup' in Multiplicity as well.
 
 supUEs :: [UsageEnv] -> UsageEnv

@@ -146,9 +146,10 @@ module GHC.Builtin.Types (
         doubleElemRepDataConTy,
 
         -- * Multiplicity and friends
-        multiplicityTyConName, oneDataConName, manyDataConName, multiplicityTy,
-        multiplicityTyCon, oneDataCon, manyDataCon, oneDataConTy, manyDataConTy,
-        oneDataConTyCon, manyDataConTyCon,
+        multiplicityTyConName, oneDataConName, manyDataConName, zeroDataConName, multiplicityTy,
+        multiplicityTyCon, oneDataCon, manyDataCon, zeroDataCon, 
+        oneDataConTy, manyDataConTy, zeroDataConTy, 
+        oneDataConTyCon, manyDataConTyCon, zeroDataConTyCon, 
         multMulTyCon,
 
         unrestrictedFunTyCon, unrestrictedFunTyConName,
@@ -1520,28 +1521,32 @@ multiplicityTyConName :: Name
 multiplicityTyConName = mkWiredInTyConName UserSyntax gHC_TYPES (fsLit "Multiplicity")
                           multiplicityTyConKey multiplicityTyCon
 
-oneDataConName, manyDataConName :: Name
+oneDataConName, manyDataConName, zeroDataConName :: Name
 oneDataConName  = mkWiredInDataConName UserSyntax gHC_TYPES (fsLit "One") oneDataConKey oneDataCon
 manyDataConName = mkWiredInDataConName UserSyntax gHC_TYPES (fsLit "Many") manyDataConKey manyDataCon
+zeroDataConName = mkWiredInDataConName UserSyntax gHC_TYPES (fsLit "Zero") zeroDataConKey zeroDataCon
 
 multiplicityTy :: Type
 multiplicityTy = mkTyConTy multiplicityTyCon
 
 multiplicityTyCon :: TyCon
 multiplicityTyCon = pcTyCon multiplicityTyConName Nothing []
-                            [oneDataCon, manyDataCon]
+                            [oneDataCon, manyDataCon, zeroDataCon]
 
-oneDataCon, manyDataCon :: DataCon
+oneDataCon, manyDataCon, zeroDataCon :: DataCon
 oneDataCon = pcDataCon oneDataConName [] [] multiplicityTyCon
 manyDataCon = pcDataCon manyDataConName [] [] multiplicityTyCon
+zeroDataCon = pcDataCon zeroDataConName [] [] multiplicityTyCon
 
-oneDataConTy, manyDataConTy :: Type
+oneDataConTy, manyDataConTy, zeroDataConTy :: Type
 oneDataConTy = mkTyConTy oneDataConTyCon
 manyDataConTy = mkTyConTy manyDataConTyCon
+zeroDataConTy = mkTyConTy zeroDataConTyCon
 
-oneDataConTyCon, manyDataConTyCon :: TyCon
+oneDataConTyCon, manyDataConTyCon, zeroDataConTyCon :: TyCon
 oneDataConTyCon = promoteDataCon oneDataCon
 manyDataConTyCon = promoteDataCon manyDataCon
+zeroDataConTyCon = promoteDataCon zeroDataCon
 
 multMulTyConName :: Name
 multMulTyConName =

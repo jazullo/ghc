@@ -13,6 +13,7 @@ module GHC.Core.Multiplicity
   ( Mult
   , pattern OneTy
   , pattern ManyTy
+  , pattern ZeroTy
   , isMultMul
   , mkMultAdd
   , mkMultMul
@@ -23,6 +24,7 @@ module GHC.Core.Multiplicity
   , unrestricted
   , linear
   , tymult
+  , tyzero
   , irrelevantMult
   , mkScaled
   , scaledSet
@@ -341,9 +343,13 @@ that the summands and factors are ordered somehow, to have more equalities.
 -- With only two multiplicities One and Many, we can always replace
 -- p + q by Many. See Note [Overapproximating multiplicities].
 mkMultAdd :: Mult -> Mult -> Mult
+mkMultAdd ZeroTy m = m
+mkMultAdd m ZeroTy = m
 mkMultAdd _ _ = ManyTy
 
 mkMultMul :: Mult -> Mult -> Mult
+mkMultMul ZeroTy _      = ZeroTy
+mkMultMul _      ZeroTy = ZeroTy
 mkMultMul OneTy  p      = p
 mkMultMul p      OneTy  = p
 mkMultMul ManyTy _      = ManyTy
@@ -357,7 +363,13 @@ scaleScaled m' (Scaled m t) = Scaled (m' `mkMultMul` m) t
 -- | @mkMultSup w1 w2@ returns a multiplicity such that @mkMultSup w1
 -- w2 >= w1@ and @mkMultSup w1 w2 >= w2@. See Note [Overapproximating multiplicities].
 mkMultSup :: Mult -> Mult -> Mult
-mkMultSup = mkMultMul
+mkMultSup ZeroTy  p       = p
+mkMultSup p       ZeroTy  = p
+mkMultSup OneTy   p       = p
+mkMultSup p       OneTy   = p
+mkMultSup ManyTy  _       = ManyTy
+mkMultSup _       ManyTy  = ManyTy
+mkMultSup p q = mkTyConApp multMulTyCon [p, q]
 -- Note: If you are changing this logic, check 'supUE' in UsageEnv as well.
 
 --
@@ -375,6 +387,7 @@ instance Outputable IsSubmult where
 -- value of multiplicity @w2@ is expected. This is a partial order.
 
 submult :: Mult -> Mult -> IsSubmult
+submult ZeroTy _     = Submult
 submult _     ManyTy = Submult
 submult OneTy OneTy  = Submult
 -- The 1 <= p rule

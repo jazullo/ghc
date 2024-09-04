@@ -2279,6 +2279,9 @@ oneDataConKey, manyDataConKey :: Unique
 oneDataConKey = mkPreludeDataConUnique 117
 manyDataConKey = mkPreludeDataConUnique 118
 
+zeroDataConKey :: Unique
+zeroDataConKey = mkPreludeDataConUnique 125
+
 -- ghc-bignum
 integerISDataConKey, integerINDataConKey, integerIPDataConKey,
    naturalNSDataConKey, naturalNBDataConKey :: Unique

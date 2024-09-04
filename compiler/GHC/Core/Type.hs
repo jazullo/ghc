@@ -144,10 +144,10 @@ module GHC.Core.Type (
         -- * Multiplicity
 
         isMultiplicityTy, isMultiplicityVar,
-        unrestricted, linear, tymult,
+        unrestricted, linear, tymult, tyzero, 
         mkScaled, irrelevantMult, scaledSet,
-        pattern OneTy, pattern ManyTy,
-        isOneTy, isManyTy,
+        pattern OneTy, pattern ManyTy, pattern ZeroTy, 
+        isOneTy, isManyTy, isZeroTy, 
         isLinearType,
 
         -- * Main data types representing Kinds
@@ -264,7 +264,7 @@ import {-# SOURCE #-} GHC.Builtin.Types
    ( charTy, naturalTy
    , typeSymbolKind, liftedTypeKind, unliftedTypeKind
    , constraintKind, zeroBitTypeKind
-   , manyDataConTy, oneDataConTy
+   , manyDataConTy, oneDataConTy, zeroDataConTy
    , liftedRepTy, unliftedRepTy, zeroBitRepTy )
 
 import GHC.Types.Name( Name )
@@ -3190,6 +3190,7 @@ their friends here with them.
 -}
 
 unrestricted, linear, tymult :: a -> Scaled a
+tyzero :: a -> Scaled a
 
 -- | Scale a payload by Many
 unrestricted = Scaled ManyTy
@@ -3199,6 +3200,8 @@ linear = Scaled OneTy
 
 -- | Scale a payload by Many; used for type arguments in core
 tymult = Scaled ManyTy
+
+tyzero = Scaled ZeroTy
 
 irrelevantMult :: Scaled a -> a
 irrelevantMult = scaledThing
@@ -3217,6 +3220,10 @@ pattern ManyTy :: Mult
 pattern ManyTy <- (isManyTy -> True)
   where ManyTy = manyDataConTy
 
+pattern ZeroTy :: Mult
+pattern ZeroTy <- (isZeroTy -> True)
+  where ZeroTy = zeroDataConTy
+
 isManyTy :: Mult -> Bool
 isManyTy ty
   | Just tc <- tyConAppTyCon_maybe ty
@@ -3228,6 +3235,12 @@ isOneTy ty
   | Just tc <- tyConAppTyCon_maybe ty
   = tc `hasKey` oneDataConKey
 isOneTy _ = False
+
+isZeroTy :: Mult -> Bool
+isZeroTy ty
+  | Just tc <- tyConAppTyCon_maybe ty
+  = tc `hasKey` zeroDataConKey
+isZeroTy _ = False
 
 isLinearType :: Type -> Bool
 -- ^ @isLinear t@ returns @True@ of a if @t@ is a type of (curried) function
