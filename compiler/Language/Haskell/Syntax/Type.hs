@@ -944,6 +944,8 @@ data HsArrowOf mult pass
 
   | HsLinearArrow !(XLinearArrow mult pass)
     -- ^ a %1 -> b or a %1 → b, or a ⊸ b
+  
+  | HsPhantomArrow !(XPhantomArrow mult pass)
 
   | HsExplicitMult !(XExplicitMult mult pass) !mult
     -- ^ a %m -> b or a %m → b (very much including `a %Many -> b`!
@@ -955,6 +957,7 @@ data HsArrowOf mult pass
 
 type family XUnrestrictedArrow mult p
 type family XLinearArrow       mult p
+type family XPhantomArrow      mult p
 type family XExplicitMult      mult p
 type family XXArrow            mult p
 
